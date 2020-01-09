@@ -1,0 +1,121 @@
+<page-header [title]="''" [autoBreadcrumb]="false">
+  功能导航&nbsp;/&nbsp;系统功能&nbsp;/&nbsp;用户管理
+</page-header>
+<nz-card>
+  <ng-container *ngIf="formStatus===0">
+    <button nz-button (click)="addRow()" class="editable-add-btn">新增</button>
+  </ng-container>
+  <ng-container *ngIf="formStatus !== 0">
+    <button nz-button (click)="addRow()" class="editable-add-btn" disabled="disabled">新增</button>
+  </ng-container>
+  <nz-table
+    #editRowTable
+    nzSize="small"
+    nzBordered
+    [nzFrontPagination]="false"
+    [(nzPageIndex)]="pageIndex"
+    [(nzPageSize)]="pageSize"
+    [(nzTotal)]="total"
+    (nzPageIndexChange)="loadUserExtends()"
+    [nzData]="dataSet"
+    [nzShowTotal]="totalTemplate"
+  >
+    <ng-template #totalTemplate let-total>
+      共 {{total}} 条
+    </ng-template>
+    <thead>
+    <tr>
+      <th nzWidth="100px">登录名</th>
+      <th nzWidth="100px">姓名</th>
+      <th nzWidth="80px">性别</th>
+      <th nzWidth="100px">联系方式</th>
+      <th nzWidth="150px">邮箱</th>
+      <th nzWidth="100px">角色</th>
+      <th nzWidth="150px">操作</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let data of editRowTable.data">
+      <td>
+        <div class="editable-cell">
+          <div class="editable-cell-text-wrapper">
+            <ng-container *ngIf="!editCache[data.id].edit">
+              {{data.user?.login}}
+            </ng-container>
+            <ng-container *ngIf="editCache[data.id].edit">
+              <input type="text" nz-input [(ngModel)]="editCache[data.id].data.user.login">
+            </ng-container>
+          </div>
+        </div>
+      </td>
+      <td>
+        <ng-container *ngIf="!editCache[data.id].edit">
+          {{data.username}}
+        </ng-container>
+        <ng-container *ngIf="editCache[data.id].edit">
+          <input type="text" nz-input [(ngModel)]="editCache[data.id].data.username">
+        </ng-container>
+      </td>
+      <td>
+        <ng-container *ngIf="!editCache[data.id].edit">
+          <div ngSwitch="{{data.gender}}">
+            <span *ngSwitchCase="'MALE'">男</span>
+            <span *ngSwitchCase="'FEMALE'">女</span>
+          </div>
+        </ng-container>
+        <ng-container *ngIf="editCache[data.id].edit">
+          <nz-select [(ngModel)]="editCache[data.id].data.gender" nzPlaceHolder=" 性别">
+            <nz-option nzValue="MALE" nzLabel="男"></nz-option>
+            <nz-option nzValue="FEMALE" nzLabel="女"></nz-option>
+          </nz-select>
+        </ng-container>
+      </td>
+      <td>
+        <ng-container *ngIf="!editCache[data.id].edit">
+          {{data.mobile}}
+        </ng-container>
+        <ng-container *ngIf="editCache[data.id].edit">
+          <input type="text" nz-input [(ngModel)]="editCache[data.id].data.user.mobile">
+        </ng-container>
+      </td>
+      <td>
+        <ng-container *ngIf="!editCache[data.id].edit">
+          {{data.user?.email}}
+        </ng-container>
+        <ng-container *ngIf="editCache[data.id].edit">
+          <input type="email" nz-input [(ngModel)]="editCache[data.id].data.user.email">
+        </ng-container>
+      </td>
+      <td>
+        <ng-container *ngIf="!editCache[data.id].edit">
+          {{dispRole(data.roles)}}
+        </ng-container>
+        <ng-container *ngIf="editCache[data.id].edit">
+          <nz-select style="width: 180px" [(ngModel)]="editCache[data.id].data.roleIds" [nzMode]="'multiple'" nzAllowClear nzPlaceHolder="角色">
+            <nz-option *ngFor="let role of roles" [nzValue]="role.id" [nzLabel]="role.roleName"></nz-option>
+          </nz-select>
+        </ng-container>
+      </td>
+      <td>
+        <div class="editable-row-operations">
+          <ng-container *ngIf="formStatus===0&&!editCache[data.id].edit">
+            <a (click)="startEdit(data.id)">编辑</a>
+            <nz-popconfirm [nzTitle]="'确认删除吗？'" (nzOnConfirm)="deleteRow(data.id)">
+              <a nz-popconfirm>删除</a>
+            </nz-popconfirm>
+            <nz-popconfirm [nzTitle]="'确认重置密码吗？'" (nzOnConfirm)="resetPassword(data.user.login)">
+              <a nz-popconfirm>重置密码</a>
+            </nz-popconfirm>
+          </ng-container>
+          <ng-container *ngIf="editCache[data.id].edit">
+            <a (click)="saveEdit(data.id)">保存</a>
+            <nz-popconfirm [nzTitle]="'确认取消吗?'" (nzOnConfirm)="cancelEdit(data.id)">
+              <a nz-popconfirm>取消</a>
+            </nz-popconfirm>
+          </ng-container>
+        </div>
+      </td>
+    </tr>
+    </tbody>
+  </nz-table>
+</nz-card>

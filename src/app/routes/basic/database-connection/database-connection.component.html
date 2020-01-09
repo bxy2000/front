@@ -1,0 +1,159 @@
+<page-header [title]="''" [autoBreadcrumb]="false">
+  功能导航&nbsp;/&nbsp;基础信息&nbsp;/&nbsp;数据连接
+</page-header>
+<nz-card>
+  <ng-container *ngIf="formStatus===0">
+    <button nz-button (click)="addRow()" class="editable-add-btn">新增</button>
+  </ng-container>
+  <ng-container *ngIf="formStatus !== 0">
+    <button nz-button (click)="addRow()" class="editable-add-btn" disabled="disabled">新增</button>
+  </ng-container>
+  <nz-table
+    #editRowTable
+    nzSize="small"
+    nzBordered
+    [nzFrontPagination]="false"
+    [nzData]="dataSet"
+    [nzLoading]="loading"
+    [nzTotal]="total"
+    [(nzPageIndex)]="pageIndex"
+    [(nzPageSize)]="pageSize"
+    (nzPageIndexChange)="loadDatabaseConnection()"
+    [nzShowTotal]="totalTemplate"
+  >
+    <ng-template #totalTemplate let-total>
+      共 {{total}} 条
+    </ng-template>
+    <thead>
+    <tr>
+      <th nzWidth="50px">ID</th>
+      <th nzWidth="100px">连接名称</th>
+      <th nzWidth="100px">主机</th>
+      <th nzWidth="100px">端口</th>
+      <th nzWidth="100px">数据库</th>
+      <!--<th nzWidth="100px">可选参数</th>-->
+      <th nzWidth="100px">类型</th>
+      <th nzWidth="180px">驱动</th>
+      <th nzWidth="300px">url</th>
+      <th nzWidth="100px">用户名</th>
+      <th nzWidth="100px">密码</th>
+      <th nzWidth="150px">操作</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let data of editRowTable.data">
+      <td>
+        <div class="editable-cell">
+          <div class="editable-cell-text-wrapper">
+            {{data.id}}
+          </div>
+        </div>
+      </td>
+      <td>
+        <ng-container *ngIf="!editCache[data.id].edit">
+          {{data.connectionName}}
+        </ng-container>
+        <ng-container *ngIf="editCache[data.id].edit">
+          <input type="text" nz-input [(ngModel)]="editCache[data.id].data.connectionName">
+        </ng-container>
+      </td>
+      <td>
+        <ng-container *ngIf="!editCache[data.id].edit">
+          {{data.host}}
+        </ng-container>
+        <ng-container *ngIf="editCache[data.id].edit">
+          <input type="text" nz-input [(ngModel)]="editCache[data.id].data.host">
+        </ng-container>
+      </td>
+      <td>
+        <ng-container *ngIf="!editCache[data.id].edit">
+          {{data.port}}
+        </ng-container>
+        <ng-container *ngIf="editCache[data.id].edit">
+          <input type="text" nz-input [(ngModel)]="editCache[data.id].data.port">
+        </ng-container>
+      </td>
+      <td>
+        <ng-container *ngIf="!editCache[data.id].edit">
+          {{data.databaseName}}
+        </ng-container>
+        <ng-container *ngIf="editCache[data.id].edit">
+          <input type="text" nz-input [(ngModel)]="editCache[data.id].data.databaseName">
+        </ng-container>
+      </td>
+      <!--<td>-->
+        <!--<ng-container *ngIf="!editCache[data.id].edit">-->
+          <!--{{data.params}}-->
+        <!--</ng-container>-->
+        <!--<ng-container *ngIf="editCache[data.id].edit">-->
+          <!--<input type="text" nz-input [(ngModel)]="editCache[data.id].data.params">-->
+        <!--</ng-container>-->
+      <!--</td>-->
+      <td>
+        <ng-container *ngIf="!editCache[data.id].edit">
+          <div ngSwitch="{{data.type}}">
+            <span *ngSwitchCase="'MYSQL'">MySQL</span>
+            <span *ngSwitchCase="'SQLSERVER'">SqlServer</span>
+            <span *ngSwitchCase="'ORACLE'">Oracle</span>
+          </div>
+        </ng-container>
+        <ng-container *ngIf="editCache[data.id].edit">
+          <nz-select style="width: 100px" [(ngModel)]="editCache[data.id].data.type" nzPlaceHolder="类型" (ngModelChange)="typeChange($event,data.id)">
+            <nz-option nzValue="MYSQL" nzLabel="MySQL"></nz-option>
+            <nz-option nzValue="SQLSERVER" nzLabel="SqlServer"></nz-option>
+            <nz-option nzValue="ORACLE" nzLabel="Oracle"></nz-option>
+          </nz-select>
+        </ng-container>
+      </td>
+      <td>
+        <ng-container *ngIf="!editCache[data.id].edit">
+          {{data.driver}}
+        </ng-container>
+        <ng-container *ngIf="editCache[data.id].edit">
+          <input type="text" nz-input [(ngModel)]="editCache[data.id].data.driver">
+        </ng-container>
+      </td>
+      <td>
+        <ng-container *ngIf="!editCache[data.id].edit">
+          {{data.url}}
+        </ng-container>
+        <ng-container *ngIf="editCache[data.id].edit">
+          <input type="text" nz-input [(ngModel)]="editCache[data.id].data.url">
+        </ng-container>
+      </td>
+      <td>
+        <ng-container *ngIf="!editCache[data.id].edit">
+          {{data.username}}
+        </ng-container>
+        <ng-container *ngIf="editCache[data.id].edit">
+          <input type="text" nz-input [(ngModel)]="editCache[data.id].data.username">
+        </ng-container>
+      </td>
+      <td>
+        <ng-container *ngIf="!editCache[data.id].edit">
+          {{data.password}}
+        </ng-container>
+        <ng-container *ngIf="editCache[data.id].edit">
+          <input type="text" nz-input [(ngModel)]="editCache[data.id].data.password">
+        </ng-container>
+      </td>
+      <td>
+        <div class="editable-row-operations">
+          <ng-container *ngIf="formStatus===0&&!editCache[data.id].edit">
+            <a (click)="startEdit(data.id)">编辑</a>
+            <nz-popconfirm [nzTitle]="'确认删除吗？'" (nzOnConfirm)="deleteRow(data.id)">
+              <a nz-popconfirm>删除</a>
+            </nz-popconfirm>
+          </ng-container>
+          <ng-container *ngIf="editCache[data.id].edit">
+            <a (click)="saveEdit(data.id)">保存</a>
+            <nz-popconfirm [nzTitle]="'确认取消吗?'" (nzOnConfirm)="cancelEdit(data.id)">
+              <a nz-popconfirm>取消</a>
+            </nz-popconfirm>
+          </ng-container>
+        </div>
+      </td>
+    </tr>
+    </tbody>
+  </nz-table>
+</nz-card>
