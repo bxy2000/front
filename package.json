@@ -41,7 +41,7 @@
     "@delon/theme": "^8.3.0",
     "@delon/util": "^8.3.0",
     "ajv": "^6.10.2",
-    "moment": "^2.24.0",
+    "moment": "^2.29.4",
     "ng-alain": "^8.3.0",
     "ng-zorro-antd": "^8.1.2",
     "nomnoml": "^0.6.1",
